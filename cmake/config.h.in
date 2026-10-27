@@ -1,0 +1,9 @@
+#ifndef LIBB2_CONFIG_H
+#define LIBB2_CONFIG_H
+
+#cmakedefine HAVE_EXPLICIT_BZERO 1
+#cmakedefine HAVE_EXPLICIT_MEMSET 1
+#cmakedefine HAVE_MEMSET_S 1
+#cmakedefine NATIVE_LITTLE_ENDIAN 1
+
+#endif

@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: libb2
+Description: C library providing BLAKE2b, BLAKE2s, BLAKE2bp, BLAKE2sp
+URL: https://github.com/BLAKE2/libb2
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lb2
+Cflags: -I${includedir} @LIBB2_PC_CFLAGS@
