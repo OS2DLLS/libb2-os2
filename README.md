@@ -6,14 +6,11 @@ host CPU flags or runtime SIMD dispatch when cross-compiling.
 
 ## Native build and tests
 
-The root `/data/Makefile` builds the native Linux library required by Qt's host
-build. From the already active `/data/shell.nix` shell, run `make libb2`; this
-uses a host-only environment, builds with position-independent code, runs the
-four upstream known-answer test programs, and installs the static archive,
-header, and pkg-config metadata to `/data/libb2-host`. `make qt-host` depends on
-this target and selects `INPUT_libb2=system`. Qt's OS/2 target build instead
-selects its bundled BLAKE2 implementation, so this host library is not linked
-into the OS/2 target.
+The root `/data/Makefile` uses Qt's bundled BLAKE2 implementation for both the
+native Linux Qt host build and the OS/2 Qt target (`INPUT_libb2=qt`). Therefore
+the default pipeline does not build or install a separate native `libb2-host`
+archive. It builds `libb2-os2` for OS/2 consumers; the OMF archive, header, and
+pkg-config metadata are installed under `/data/os2emx`.
 
 For a direct native build, use host mode and keep the build out of the source
 tree. The four upstream tests are registered with CTest; run the test programs
@@ -34,12 +31,12 @@ done
 
 `/data/shell.nix` supplies the generic target compiler, sysroot, OMF archiver,
 and build root through `OS2EMX_CC`, `OS2EMX_SYSROOT`, `OS2EMX_AR`, and
-`OS2EMX_BUILD_ROOT`. The root pipeline keeps native `make libb2` for Qt host
-tools separate from `make libb2-os2`, which cross-builds and installs the OMF
-target archive, header, and pkg-config file under `/data/os2emx`. QtBase still
-selects its bundled implementation; the target libb2 package is available to
-other OS/2 consumers. For a direct rebuild, pass the project's toolchain file
-explicitly. The toolchain uses the shell-provided variables, sets `-Zomf`, and
+`OS2EMX_BUILD_ROOT`. The root pipeline builds `make libb2-os2`, which cross-builds and installs the
+OMF target archive, header, and pkg-config file under `/data/os2emx`. QtBase
+uses its bundled implementation on both host and target; the target libb2
+package remains available to other OS/2 consumers. For a direct rebuild, pass
+the project's toolchain file explicitly. The toolchain uses the shell-provided
+variables, sets `-Zomf`, and
 replaces CMake's
 incompatible `qc`/ranlib archive rules with the verified `emxomfar` OMF
 commands.
@@ -58,7 +55,7 @@ run on the Linux build host. Unless explicitly overridden, an OS/2 build uses
 `$OS2EMX_PREFIX/` as its install prefix (currently `/data/os2emx/`), so
 `cmake --install` writes directly there. To stage instead of installing into
 the shared prefix, set `DESTDIR="$OS2EMX_BUILD_ROOT/libb2-os2-stage"` for the
-the install command. The OS/2 CMake generator installs the OMF archive as
+install command. The OS/2 CMake generator installs the OMF archive as
 `b2.lib`, plus `blake2.h` and `libb2.pc`; the native Linux build uses
 `libb2.a`.
 
